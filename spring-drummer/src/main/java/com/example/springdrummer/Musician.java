@@ -6,6 +6,10 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
 import java.io.File;
 import java.util.Arrays;
 
@@ -27,6 +31,20 @@ public class Musician extends TextWebSocketHandler {
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
-        LOG.info("Got beat: {}", message.getPayload());
+        short beat = Short.parseShort(message.getPayload());
+        char c = pattern.charAt(beat - 1);
+        if (c == 'x') {
+            try {
+                AudioInputStream stream = AudioSystem.getAudioInputStream(toPlay);
+                var format = stream.getFormat();
+                DataLine.Info dataLineInfo = new DataLine.Info(Clip.class, format);
+                Clip clip = (Clip) AudioSystem.getLine(dataLineInfo);
+                clip.open(stream);
+                clip.setMicrosecondPosition(0);
+                clip.start();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
