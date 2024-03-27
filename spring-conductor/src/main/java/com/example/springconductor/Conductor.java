@@ -2,10 +2,12 @@ package com.example.springconductor;
 
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 @EnableScheduling
+@Component
 public class Conductor {
     private static final short BPM = 180;
     private static final int MS_IN_MINUTE = 60_000;
